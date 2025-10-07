@@ -1,0 +1,18 @@
+# ===== Visual Studio / .NET =====
+.vs/
+*.user
+*.suo
+bin/
+obj/
+
+# ===== Angular / Node =====
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+node_modules/
+dist/
+.angular/
+
+# ===== System files =====
+Thumbs.db
+.DS_Store
