@@ -1,17 +1,19 @@
 ﻿using backend.Controllers;
 using backend.Data;
-using backend.Models;
+using backend.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
-    [Route("api/[Controller]")]
     [ApiController]
+    [Route("api/[Controller]")]
+    [Authorize]
     public class CVController : ControllerBase
     {
         private readonly CVDbContext _context;

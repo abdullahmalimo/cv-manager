@@ -18,7 +18,7 @@ namespace backend.Migrations
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("backend.Models.CV", b =>
+            modelBuilder.Entity("backend.Models.Entities.CV", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,16 +35,21 @@ namespace backend.Migrations
                     b.Property<int>("PersonalInformationId")
                         .HasColumnType("int");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ExperienceInformationId");
 
                     b.HasIndex("PersonalInformationId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("CV");
                 });
 
-            modelBuilder.Entity("backend.Models.ExperienceInformation", b =>
+            modelBuilder.Entity("backend.Models.Entities.ExperienceInformation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -67,7 +72,7 @@ namespace backend.Migrations
                     b.ToTable("ExperienceInformation");
                 });
 
-            modelBuilder.Entity("backend.Models.PersonalInformation", b =>
+            modelBuilder.Entity("backend.Models.Entities.PersonalInformation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -92,23 +97,64 @@ namespace backend.Migrations
                     b.ToTable("PersonalInformation");
                 });
 
-            modelBuilder.Entity("backend.Models.CV", b =>
+            modelBuilder.Entity("backend.Models.Entities.User", b =>
                 {
-                    b.HasOne("backend.Models.ExperienceInformation", "ExperienceInformation")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("backend.Models.Entities.CV", b =>
+                {
+                    b.HasOne("backend.Models.Entities.ExperienceInformation", "ExperienceInformation")
                         .WithMany()
                         .HasForeignKey("ExperienceInformationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("backend.Models.PersonalInformation", "PersonalInformation")
+                    b.HasOne("backend.Models.Entities.PersonalInformation", "PersonalInformation")
                         .WithMany()
                         .HasForeignKey("PersonalInformationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Entities.User", "User")
+                        .WithMany("CVs")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ExperienceInformation");
 
                     b.Navigation("PersonalInformation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.Entities.User", b =>
+                {
+                    b.Navigation("CVs");
                 });
 #pragma warning restore 612, 618
         }
