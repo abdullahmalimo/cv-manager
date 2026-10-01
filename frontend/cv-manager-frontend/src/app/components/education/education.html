@@ -1,0 +1,76 @@
+<h2>Education</h2>
+
+@if (errorMessage) { <p>{{ errorMessage }}</p> }
+
+@if (!showForm) {
+  <button (click)="startAdd()">+ Add education</button>
+
+  @if (educations.length === 0) {
+    <p>No education added yet.</p>
+  }
+
+  @for (e of educations; track e.id) {
+    <div>
+      <strong>{{ e.degree }}</strong> at {{ e.institution }}
+      @if (e.studyField) { · {{ e.studyField }} }
+      <br />
+      {{ e.startDate | date: 'MMM yyyy' }} –
+      {{ e.endDate ? (e.endDate | date: 'MMM yyyy') : 'Ongoing' }}
+
+      <button (click)="startEdit(e)">Edit</button>
+      <button (click)="delete(e.id)">Delete</button>
+    </div>
+  }
+} @else {
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <h3>{{ editingId ? 'Edit education' : 'Add education' }}</h3>
+
+    <div>
+      <label for="institution">Institution:</label>
+      <input
+        id="institution"
+        type="text"
+        formControlName="institution"
+      />
+    </div>
+
+    <div>
+      <label for="degree">Degree:</label>
+      <input
+        id="degree"
+        type="text"
+        formControlName="degree"
+      />
+    </div>
+
+    <div>
+      <label for="studyField">Field of Study:</label>
+      <input
+        id="studyField"
+        type="text"
+        formControlName="studyField"
+      />
+    </div>
+
+    <div>
+      <label for="startDate">Start Date:</label>
+      <input
+        id="startDate"
+        type="date"
+        formControlName="startDate"
+      />
+    </div>
+
+    <div>
+      <label for="endDate">End Date (leave empty if current):</label>
+      <input
+        id="endDate"
+        type="date"
+        formControlName="endDate"
+      />
+    </div>
+
+    <button type="submit" [disabled]="form.invalid">Save</button>
+    <button type="button" (click)="cancel()">Cancel</button>
+  </form>
+}

@@ -11,8 +11,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-namespace backend.Controllers
 
+namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -21,46 +21,64 @@ namespace backend.Controllers
         private readonly CVDbContext _context;
         private readonly IConfiguration _configuration;
 
-        public AuthController(CVDbContext context, IConfiguration configuration)
+        public AuthController(
+            CVDbContext context,
+            IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
         }
 
+        // POST: api/Auth/register
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDTO registerDTO)
+        public async Task<ActionResult<RegisterResponseDTO>> Register(
+            RegisterRequestDTO request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var emailExists = await _context.Users.AnyAsync(
-            u => u.Email == registerDTO.Email);
+
+            var emailExists = await _context.Users
+                .AnyAsync(u => u.Email == request.Email);
+
             if (emailExists)
             {
                 return BadRequest("Email already exists.");
             }
+
             var user = new User
             {
-                Username = registerDTO.Username,
-                Email = registerDTO.Email,
+                Username = request.Username,
+                Email = request.Email,
                 Role = "User"
-
             };
+
             var passwordHasher = new PasswordHasher<User>();
+
             user.PasswordHash = passwordHasher.HashPassword(
                 user,
-                registerDTO.Password
-             );
+                request.Password
+            );
+
             _context.Users.Add(user);
+
             await _context.SaveChangesAsync();
-            return Ok(new
+
+            var response = new RegisterResponseDTO
             {
-                message = "Registration Successful."
-            });
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email
+            };
+
+            return Ok(response);
         }
+
+        // POST: api/Auth/login
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDTO loginDTO)
+        public async Task<ActionResult<LoginResponseDTO>> Login(
+            LoginRequestDTO request)
         {
             if (!ModelState.IsValid)
             {
@@ -68,7 +86,7 @@ namespace backend.Controllers
             }
 
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
+                .FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null)
             {
@@ -80,7 +98,7 @@ namespace backend.Controllers
             var result = passwordHasher.VerifyHashedPassword(
                 user,
                 user.PasswordHash,
-                loginDTO.Password
+                request.Password
             );
 
             if (result == PasswordVerificationResult.Failed)
@@ -90,13 +108,22 @@ namespace backend.Controllers
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(
+                    ClaimTypes.NameIdentifier,
+                    user.Id.ToString()),
+
+                new Claim(
+                    ClaimTypes.Name,
+                    user.Username),
+
+                new Claim(
+                    ClaimTypes.Role,
+                    user.Role)
             };
 
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])
+                Encoding.UTF8.GetBytes(
+                    _configuration["Jwt:Key"])
             );
 
             var credentials = new SigningCredentials(
@@ -109,16 +136,24 @@ namespace backend.Controllers
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(
-                    double.Parse(_configuration["Jwt:ExpiryMinutes"])
+                    double.Parse(
+                        _configuration["Jwt:ExpiryMinutes"])
                 ),
                 signingCredentials: credentials
             );
 
-            return Ok(new
+            var tokenString =
+                new JwtSecurityTokenHandler().WriteToken(token);
+
+            var response = new LoginResponseDTO
             {
-                message = "Login successful.",
-                token = new JwtSecurityTokenHandler().WriteToken(token)
-            });
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                Token = tokenString
+            };
+
+            return Ok(response);
         }
     }
 }

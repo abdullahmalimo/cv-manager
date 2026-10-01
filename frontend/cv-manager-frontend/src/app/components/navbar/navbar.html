@@ -1,0 +1,53 @@
+<header class="navbar">
+
+  <div class="navbar-content">
+
+    <a class="brand" routerLink="/">
+      <span class="brand-icon">C</span>
+
+      <span class="brand-text">
+        CV Manager
+      </span>
+    </a>
+
+
+    @if (authService.isLoggedIn()) {
+
+      <div class="account-area">
+
+        <a
+          routerLink="/profile"
+          class="profile-link">
+          My Profile
+        </a>
+
+        <button
+          type="button"
+          class="logout-button"
+          (click)="logout()">
+          Logout
+        </button>
+
+      </div>
+
+    } @else {
+
+      <div class="auth-links">
+
+        <a routerLink="/login">
+          Login
+        </a>
+
+        <a
+          routerLink="/register"
+          class="register-button">
+          Register
+        </a>
+
+      </div>
+
+    }
+
+  </div>
+
+</header>

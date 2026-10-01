@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface RegisterRequest {
     email: string;
@@ -25,7 +26,7 @@ export interface LoginResponse {
 })
 export class AuthService {
 
-    private apiUrl = 'https://localhost:5001/api/Auth';
+    private apiUrl = `${environment.apiUrl}/auth`;
 
     constructor(private http: HttpClient) { }
 
@@ -44,5 +45,8 @@ export class AuthService {
     }
     logout(): void {
         localStorage.removeItem('token');
+    }
+    isLoggedIn(): boolean {
+        return !!localStorage.getItem('token');
     }
 }

@@ -1,49 +1,316 @@
-<form [formGroup]="cvForm" (ngSubmit)="onSubmit()">
-  <h2>Create CV</h2>
 
+<form [formGroup]="cvForm" (ngSubmit)="onSubmit()" class="cv-form">
+  <header class="form-header">
+    <p class="eyebrow">CV BUILDER</p>
+    <h1>{{ editingId ? 'Edit your CV' : 'Create a new CV' }}</h1>
+    <p>Build a tailored CV from your professional information.</p>
+  </header>
 
-  <div>
-        <label for="name">CV Name:</label>
-        <input id="name" type="text" formControlName="name" />
-  </div>
+  @if (errorMessage) {
+    <div class="error-message" role="alert">{{ errorMessage }}</div>
+  }
 
-  <h3>Personal Information</h3>
-  <div formGroupName="personalInformation">
-    <div>
-        <label for="fullName">Full Name:</label>
-        <input id="fullName" type="text" formControlName="fullName" />
+  <button
+    type="button"
+    class="profile-import-button"
+    (click)="fillFromProfile()"
+    [disabled]="loadingProfile">
+    {{ loadingProfile ? 'Loading profile...' : 'Fill from my profile' }}
+  </button>
+
+  @if (profileMessage) {
+    <p class="success-message" role="status">{{ profileMessage }}</p>
+  }
+
+  <section class="form-section">
+    <h2>CV details</h2>
+
+    <div class="form-field">
+      <label for="title">CV name *</label>
+      <input id="title" type="text" formControlName="title"
+        placeholder="e.g. Junior .NET Developer" />
     </div>
-    <div>
-        <label for="email">Email:</label>
-        <input id="email" type="email" formControlName="email" />
+
+    <div class="form-field">
+      <label for="description">Description</label>
+      <input id="description" type="text" formControlName="description"
+        placeholder="e.g. Tailored for backend roles" />
     </div>
-    <div>
-        <label for="cityName">City Name:</label>
+
+    <div class="form-field">
+      <label for="templateName">Template</label>
+      <select id="templateName" formControlName="templateName">
+        <option value="classic">Classic</option>
+        <option value="modern">Modern</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="form-section" formGroupName="personalDetails">
+    <h2>Personal information</h2>
+
+    <div class="form-field">
+      <label for="fullName">Full name *</label>
+      <input id="fullName" type="text" formControlName="fullName" />
+    </div>
+
+    <div class="form-field">
+      <label for="email">Email *</label>
+      <input id="email" type="email" formControlName="email" />
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label for="mobileNumber">Phone</label>
+        <input id="mobileNumber" type="tel" formControlName="mobileNumber" />
+      </div>
+
+      <div class="form-field">
+        <label for="cityName">City</label>
         <input id="cityName" type="text" formControlName="cityName" />
+      </div>
     </div>
-    <div>
-        <label for="mobileNumber">Mobile:</label>
-        <input id="mobileNumber" type="text" formControlName="mobileNumber" />
-    </div>
-    <div>
-        <label for="zip">Mobile:</label>
-        <input id="zip" type="text" formControlName="zip" />
-    </div>
-  </div>
+  </section>
 
-  <h3>Experience Information</h3>
-  <div formGroupName="experienceInformation">
-    <div>
-        <label for="companyName">Company Name:</label>
-        <input id="companyName" type="text" formControlName="companyName" />
+  <section class="form-section">
+    <h2>Professional summary</h2>
+    <div class="form-field">
+      <label for="summary">Summary</label>
+      <textarea id="summary" rows="5" formControlName="summary"
+        placeholder="Briefly describe your professional strengths..."></textarea>
     </div>
-        <label for="city">Company City:</label>
-        <input id="city" type="text" formControlName="city" />
-    <div>
-        <label for="companyField">Company Field:</label>
-        <input id="companyField" type="text" formControlName="companyField" />
-    </div>
+  </section>
+
+  <section class="form-section">
+    <div class="section-heading">
+      <div>
+        <h2>Experience</h2>
+        <p>Choose the roles relevant to this CV.</p>
+      </div>
+      <button type="button" class="add-button" (click)="addExperience()">
+        + Add
+      </button>
     </div>
 
-    <button type="submit" [disabled]="cvForm.invalid">Submit</button>
+    <div formArrayName="experiences">
+      @for (item of experiences.controls; track $index; let i = $index) {
+        <div class="repeat-card" [formGroupName]="i">
+          <div class="repeat-card-heading">
+            <h3>Position {{ i + 1 }}</h3>
+            <button type="button" class="remove-button"
+              (click)="removeExperience(i)">Remove</button>
+          </div>
+
+          <div class="form-field">
+            <label>Job title</label>
+            <input type="text" formControlName="jobTitle" />
+          </div>
+          <div class="form-field">
+            <label>Company</label>
+            <input type="text" formControlName="companyName" />
+          </div>
+          <div class="form-field">
+            <label>Location</label>
+            <input type="text" formControlName="city" />
+          </div>
+          <div class="form-field">
+            <label>Description</label>
+            <textarea rows="3" formControlName="description"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>Start date</label>
+              <input type="date" formControlName="startDate" />
+            </div>
+            <div class="form-field">
+              <label>End date</label>
+              <input type="date" formControlName="endDate" />
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="form-section">
+    <div class="section-heading">
+      <div>
+        <h2>Education</h2>
+        <p>Include the qualifications you want to highlight.</p>
+      </div>
+      <button type="button" class="add-button" (click)="addEducation()">
+        + Add
+      </button>
+    </div>
+
+    <div formArrayName="educations">
+      @for (item of educations.controls; track $index; let i = $index) {
+        <div class="repeat-card" [formGroupName]="i">
+          <div class="repeat-card-heading">
+            <h3>Qualification {{ i + 1 }}</h3>
+            <button type="button" class="remove-button"
+              (click)="removeEducation(i)">Remove</button>
+          </div>
+
+          <div class="form-field">
+            <label>Institution</label>
+            <input type="text" formControlName="institution" />
+          </div>
+          <div class="form-field">
+            <label>Degree</label>
+            <input type="text" formControlName="degree" />
+          </div>
+          <div class="form-field">
+            <label>Field of study</label>
+            <input type="text" formControlName="studyField" />
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>Start date</label>
+              <input type="date" formControlName="startDate" />
+            </div>
+            <div class="form-field">
+              <label>End date</label>
+              <input type="date" formControlName="endDate" />
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="form-section">
+    <div class="section-heading">
+      <div>
+        <h2>Skills</h2>
+        <p>Keep the skills that suit this application.</p>
+      </div>
+      <button type="button" class="add-button" (click)="addSkill()">
+        + Add
+      </button>
+    </div>
+
+    <div formArrayName="skills">
+      @for (item of skills.controls; track $index; let i = $index) {
+        <div class="repeat-card" [formGroupName]="i">
+          <div class="repeat-card-heading">
+            <h3>Skill {{ i + 1 }}</h3>
+            <button type="button" class="remove-button"
+              (click)="removeSkill(i)">Remove</button>
+          </div>
+          <div class="form-field">
+            <label>Skill name</label>
+            <input type="text" formControlName="name" />
+          </div>
+          <div class="form-field">
+            <label>Level (optional)</label>
+            <input type="number" min="1" max="5" formControlName="level" />
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="form-section">
+    <div class="section-heading">
+      <div>
+        <h2>Projects</h2>
+        <p>Showcase projects relevant to the role.</p>
+      </div>
+      <button type="button" class="add-button" (click)="addProject()">
+        + Add
+      </button>
+    </div>
+
+    <div formArrayName="projects">
+      @for (item of projects.controls; track $index; let i = $index) {
+        <div class="repeat-card" [formGroupName]="i">
+          <div class="repeat-card-heading">
+            <h3>Project {{ i + 1 }}</h3>
+            <button type="button" class="remove-button"
+              (click)="removeProject(i)">Remove</button>
+          </div>
+          <div class="form-field">
+            <label>Project name</label>
+            <input type="text" formControlName="name" />
+          </div>
+          <div class="form-field">
+            <label>Description</label>
+            <textarea rows="3" formControlName="description"></textarea>
+          </div>
+          <div class="form-field">
+            <label>Technologies</label>
+            <input type="text" formControlName="technologies" />
+          </div>
+          <div class="form-field">
+            <label>Project URL</label>
+            <input type="url" formControlName="url" />
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>Start date</label>
+              <input type="date" formControlName="startDate" />
+            </div>
+            <div class="form-field">
+              <label>End date</label>
+              <input type="date" formControlName="endDate" />
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="form-section">
+    <div class="section-heading">
+      <div>
+        <h2>Certificates</h2>
+        <p>Include relevant certifications and credentials.</p>
+      </div>
+      <button type="button" class="add-button" (click)="addCertificate()">
+        + Add
+      </button>
+    </div>
+
+    <div formArrayName="certificates">
+      @for (item of certificates.controls; track $index; let i = $index) {
+        <div class="repeat-card" [formGroupName]="i">
+          <div class="repeat-card-heading">
+            <h3>Certificate {{ i + 1 }}</h3>
+            <button type="button" class="remove-button"
+              (click)="removeCertificate(i)">Remove</button>
+          </div>
+          <div class="form-field">
+            <label>Certificate name</label>
+            <input type="text" formControlName="name" />
+          </div>
+          <div class="form-field">
+            <label>Issuer</label>
+            <input type="text" formControlName="issuer" />
+          </div>
+          <div class="form-field">
+            <label>Description</label>
+            <textarea rows="3" formControlName="description"></textarea>
+          </div>
+          <div class="form-field">
+            <label>Credential URL</label>
+            <input type="url" formControlName="url" />
+          </div>
+          <div class="form-field">
+            <label>Issue date</label>
+            <input type="date" formControlName="issueDate" />
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <footer class="form-actions">
+    <button type="button" class="secondary-button" routerLink="/">
+      Cancel
+    </button>
+    <button type="submit" class="primary-button" [disabled]="cvForm.invalid">
+      {{ editingId ? 'Save changes' : 'Create CV' }}
+    </button>
+  </footer>
 </form>

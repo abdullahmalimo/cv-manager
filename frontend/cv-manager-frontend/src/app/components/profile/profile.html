@@ -1,0 +1,36 @@
+<h2>My Profile</h2>
+
+@if (loading) {
+  <p>Loading...</p>
+} @else {
+  @if (!profileExists) {
+    <p>You haven't set up your profile yet. Fill it in below.</p>
+  }
+  @if (message) { <p>{{ message }}</p> }
+  @if (errorMessage) { <p>{{ errorMessage }}</p> }
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="fullName">Full Name:</label>
+      <input id="fullName" type="text" formControlName="fullName" />
+    </div>
+    <div>
+      <label for="contactEmail">Contact Email:</label>
+      <input id="contactEmail" type="email" formControlName="contactEmail" />
+    </div>
+    <div>
+      <label for="mobileNumber">Mobile Number:</label>
+      <input id="mobileNumber" type="text" formControlName="mobileNumber" />
+    </div>
+    <div>
+      <label for="cityName">City:</label>
+      <input id="cityName" type="text" formControlName="cityName" />
+    </div>
+    <div>
+      <label for="summary">Summary:</label>
+      <textarea id="summary" rows="5" formControlName="summary"></textarea>
+    </div>
+
+    <button type="submit" [disabled]="profileForm.invalid">Save</button>
+  </form>
+}

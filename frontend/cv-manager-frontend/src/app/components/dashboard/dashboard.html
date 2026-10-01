@@ -1,0 +1,67 @@
+```html
+@if (loading) {
+  <p>Loading...</p>
+} @else {
+  @if (errorMessage) {
+    <p>{{ errorMessage }}</p>
+  }
+
+  <section>
+    @if (profile) {
+      <div>{{ initials }}</div>
+      <p>MY PROFILE</p>
+      <h1>{{ profile.fullName }}</h1>
+
+      @if (profile.cityName) {
+        <p>{{ profile.cityName }}</p>
+      }
+
+      <p>{{ profile.contactEmail }} · {{ profile.mobileNumber }}</p>
+      <a routerLink="/profile">Edit profile</a>
+    } @else {
+      <h1>Welcome!</h1>
+      <p>Set up your profile to get started.</p>
+      <a routerLink="/profile">Set up profile</a>
+    }
+  </section>
+
+  <section>
+    <div>
+      <p>CERTIFICATES</p>
+      <strong>
+        {{ certificateCount }} Certificate{{ certificateCount === 1 ? '' : 's' }}
+      </strong>
+
+      @if (latestCertificate) {
+        <p>{{ latestCertificate }}</p>
+      }
+    </div>
+
+    <div>
+      <p>EDUCATION</p>
+      <strong>
+        {{ educationCount }} Qualification{{ educationCount === 1 ? '' : 's' }}
+      </strong>
+
+      @if (latestEducation) {
+        <p>{{ latestEducation }}</p>
+      }
+    </div>
+
+    <div>
+      <p>EXPERIENCE</p>
+      <strong>
+        {{ roleCount }} Work Experience{{ roleCount === 1 ? '' : 's' }}
+      </strong>
+
+      <p>
+        {{ companyCount }} compan{{ companyCount === 1 ? 'y' : 'ies' }}
+        ·
+        {{ roleCount }} role{{ roleCount === 1 ? '' : 's' }}
+      </p>
+    </div>
+  </section>
+
+  <app-cv-list />
+}
+```

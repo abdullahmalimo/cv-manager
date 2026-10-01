@@ -1,23 +1,46 @@
 <h2>Login</h2>
 
+@if (errorMessage) {
+  <p>{{ errorMessage }}</p>
+}
+
 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
   <div>
     <label for="email">Email:</label>
+
     <input
       id="email"
       type="email"
       formControlName="email">
+
+    @if (loginForm.get('email')?.touched &&
+         loginForm.get('email')?.hasError('required')) {
+      <small>Email is required.</small>
+    }
+
+    @if (loginForm.get('email')?.touched &&
+         loginForm.get('email')?.hasError('email')) {
+      <small>Please enter a valid email address.</small>
+    }
   </div>
 
   <div>
     <label for="password">Password:</label>
+
     <input
       id="password"
       type="password"
       formControlName="password">
+
+    @if (loginForm.get('password')?.touched &&
+         loginForm.get('password')?.hasError('required')) {
+      <small>Password is required.</small>
+    }
   </div>
 
-  <button type="submit">Login</button>
+  <button type="submit" [disabled]="loginForm.invalid">
+    Login
+  </button>
 
 </form>

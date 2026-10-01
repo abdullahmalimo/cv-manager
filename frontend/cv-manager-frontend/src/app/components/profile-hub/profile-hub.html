@@ -1,0 +1,24 @@
+<h2>Profile Workspace</h2>
+<p class="page-description">
+  Manage your personal information and professional background.
+</p>
+
+<nav>
+  @for (t of tabs; track t.key) {
+    <button
+      type="button"
+      [class.active]="activeTab === t.key"
+      (click)="select(t.key)">
+      {{ t.label }}
+    </button>
+  }
+</nav>
+
+@switch (activeTab) {
+  @case ('personal') { <app-profile /> }
+  @case ('experience') { <app-experience /> }
+  @case ('education') { <app-education /> }
+  @case ('skills') { <app-skill /> }
+  @case ('projects') { <app-project /> }
+  @case ('certificates') { <app-certificate /> }
+}

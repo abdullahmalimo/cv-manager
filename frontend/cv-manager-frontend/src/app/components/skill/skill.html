@@ -1,0 +1,49 @@
+<h2>Skills</h2>
+
+@if (errorMessage) { <p>{{ errorMessage }}</p> }
+
+@if (!showForm) {
+  <button (click)="startAdd()">+ Add skill</button>
+
+  @if (skills.length === 0) {
+    <p>No skills added yet.</p>
+  }
+
+  @for (s of skills; track s.id) {
+    <div>
+      <strong>{{ s.name }}</strong>
+
+      @if (s.level !== null) {
+        · Level: {{ s.level }}
+      }
+
+      <button (click)="startEdit(s)">Edit</button>
+      <button (click)="delete(s.id)">Delete</button>
+    </div>
+  }
+} @else {
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <h3>{{ editingId ? 'Edit skill' : 'Add skill' }}</h3>
+
+    <div>
+      <label for="name">Skill:</label>
+      <input
+        id="name"
+        type="text"
+        formControlName="name"
+      />
+    </div>
+
+    <div>
+      <label for="level">Level:</label>
+      <input
+        id="level"
+        type="number"
+        formControlName="level"
+      />
+    </div>
+
+    <button type="submit" [disabled]="form.invalid">Save</button>
+    <button type="button" (click)="cancel()">Cancel</button>
+  </form>
+}

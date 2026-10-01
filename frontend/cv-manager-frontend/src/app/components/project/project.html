@@ -1,0 +1,103 @@
+<h2>Projects</h2>
+
+@if (errorMessage) { <p>{{ errorMessage }}</p> }
+
+@if (!showForm) {
+  <button (click)="startAdd()">+ Add project</button>
+
+  @if (projects.length === 0) {
+    <p>No projects added yet.</p>
+  }
+
+  @for (p of projects; track p.id) {
+    <div>
+      <strong>{{ p.name }}</strong>
+
+      @if (p.technologies) {
+        · {{ p.technologies }}
+      }
+
+      <br />
+
+      @if (p.startDate || p.endDate) {
+        {{ p.startDate ? (p.startDate | date: 'MMM yyyy') : '' }} –
+        {{ p.endDate ? (p.endDate | date: 'MMM yyyy') : 'Present' }}
+        <br />
+      }
+
+      @if (p.description) {
+        <p>{{ p.description }}</p>
+      }
+
+      @if (p.url) {
+        <a [href]="p.url" target="_blank">{{ p.url }}</a>
+      }
+
+      <br />
+
+      <button (click)="startEdit(p)">Edit</button>
+      <button (click)="delete(p.id)">Delete</button>
+    </div>
+  }
+} @else {
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <h3>{{ editingId ? 'Edit project' : 'Add project' }}</h3>
+
+    <div>
+      <label for="name">Project Name:</label>
+      <input
+        id="name"
+        type="text"
+        formControlName="name"
+      />
+    </div>
+
+    <div>
+      <label for="description">Description:</label>
+      <textarea
+        id="description"
+        rows="4"
+        formControlName="description"
+      ></textarea>
+    </div>
+
+    <div>
+      <label for="technologies">Technologies:</label>
+      <input
+        id="technologies"
+        type="text"
+        formControlName="technologies"
+      />
+    </div>
+
+    <div>
+      <label for="url">Project URL:</label>
+      <input
+        id="url"
+        type="url"
+        formControlName="url"
+      />
+    </div>
+
+    <div>
+      <label for="startDate">Start Date:</label>
+      <input
+        id="startDate"
+        type="date"
+        formControlName="startDate"
+      />
+    </div>
+
+    <div>
+      <label for="endDate">End Date:</label>
+      <input
+        id="endDate"
+        type="date"
+        formControlName="endDate"
+      />
+    </div>
+
+    <button type="submit" [disabled]="form.invalid">Save</button>
+    <button type="button" (click)="cancel()">Cancel</button>
+  </form>
+}

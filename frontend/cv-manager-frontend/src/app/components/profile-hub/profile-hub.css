@@ -1,0 +1,90 @@
+:host {
+display: block;
+max-width: 1100px;
+margin: 0 auto;
+padding: 32px 24px;
+color: #1f2937;
+}
+
+h2 {
+margin: 0 0 24px;
+font-size: 28px;
+font-weight: 700;
+letter-spacing: -0.5px;
+}
+
+/* Profile section navigation */
+nav {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+margin-bottom: 28px;
+padding: 8px;
+background: #f3f4f6;
+border: 1px solid #e5e7eb;
+border-radius: 12px;
+}
+
+/* Individual tabs */
+nav button {
+appearance: none;
+border: 1px solid transparent;
+border-radius: 8px;
+padding: 11px 16px;
+background: transparent;
+color: #4b5563;
+font: inherit;
+font-size: 14px;
+font-weight: 500;
+cursor: pointer;
+transition:
+background-color 0.2s ease,
+color 0.2s ease,
+border-color 0.2s ease,
+box-shadow 0.2s ease;
+}
+
+/* Hover state */
+nav button:hover:not(.active) {
+background: #e5e7eb;
+color: #111827;
+}
+
+/* Currently selected tab */
+nav button.active {
+background: #ffffff;
+color: #2563eb;
+border-color: #dbeafe;
+font-weight: 600;
+box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+}
+
+/* Keyboard accessibility */
+nav button:focus-visible {
+outline: 3px solid #93c5fd;
+outline-offset: 2px;
+}
+
+/* Content displayed beneath the tabs */
+@media (max-width: 600px) {
+:host {
+padding: 24px 16px;
+}
+
+h2 {
+font-size: 24px;
+margin-bottom: 18px;
+}
+
+nav {
+gap: 6px;
+padding: 6px;
+margin-bottom: 22px;
+}
+
+nav button {
+flex: 1 1 auto;
+padding: 10px 12px;
+font-size: 13px;
+}
+}

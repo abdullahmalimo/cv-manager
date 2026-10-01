@@ -1,39 +1,40 @@
 <h2>Register</h2>
 
+@if (errorMessage) { <p>{{ errorMessage }}</p> }
+
 <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
 
-    <div>
+  <div>
     <label for="username">Username:</label>
-    <input
-      id="username"
-      type="username"
-      formControlName="username">
+    <input id="username" type="text" formControlName="username">
+    @if (registerForm.get('username')?.touched && registerForm.get('username')?.invalid) {
+      <small>Username must be 3 to 20 characters.</small>
+    }
   </div>
 
   <div>
     <label for="email">Email:</label>
-    <input
-      id="email"
-      type="email"
-      formControlName="email">
+    <input id="email" type="email" formControlName="email">
+    @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+      <small>Enter a valid email address.</small>
+    }
   </div>
 
   <div>
     <label for="password">Password:</label>
-    <input
-      id="password"
-      type="password"
-      formControlName="password">
+    <input id="password" type="password" formControlName="password">
+    @if (registerForm.get('password')?.touched && registerForm.get('password')?.invalid) {
+      <small>Password must be at least 8 characters.</small>
+    }
   </div>
 
-   <div>
+  <div>
     <label for="confirmpassword">Confirm Password:</label>
-    <input
-      id="confirmpassword"
-      type="password"
-      formControlName="confirmpassword">
+    <input id="confirmpassword" type="password" formControlName="confirmpassword">
+    @if (registerForm.get('confirmpassword')?.touched && registerForm.hasError('passwordMismatch')) {
+      <small>Passwords do not match.</small>
+    }
   </div>
 
-  <button type="submit">Register</button>
-
+  <button type="submit" [disabled]="registerForm.invalid">Register</button>
 </form>

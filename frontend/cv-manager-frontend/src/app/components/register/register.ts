@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { AbstractControl, ValidationErrors, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { AbstractControl, ValidationErrors, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth';
 import { Router } from '@angular/router';
-
 
 @Component({
     selector: 'app-register',
@@ -14,6 +13,7 @@ import { Router } from '@angular/router';
 export class Register {
 
     registerForm: FormGroup;
+    errorMessage = '';
 
     constructor(
         private fb: FormBuilder,
@@ -21,10 +21,10 @@ export class Register {
         private router: Router
     ) {
         this.registerForm = this.fb.group({
-            username: [''],
-            email: [''],
-            password: [''],
-            confirmpassword: [''],
+            username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
+            email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
+            password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(100)]],
+            confirmpassword: ['', Validators.required],
         }, {
             validators: this.passwordMatchValidator
         });
@@ -33,33 +33,25 @@ export class Register {
     passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
         const password = control.get('password')?.value;
         const confirmPassword = control.get('confirmpassword')?.value;
-
-        if (password !== confirmPassword) {
-            return { passwordMismatch: true };
-        }
-
-        return null;
+        return password !== confirmPassword ? { passwordMismatch: true } : null;
     }
 
     onSubmit(): void {
         if (this.registerForm.invalid) {
-            alert('Passwords do not match.');
+            this.registerForm.markAllAsTouched();
             return;
         }
 
-
-        console.log(this.registerForm.value);
+        this.errorMessage = '';
 
         this.authService.register(this.registerForm.value).subscribe({
-            next: (response) => {
-                console.log('Register successful:', response);
-                this.router.navigate(['/login']);
-            },
+            next: () => this.router.navigate(['/login']),
             error: (err) => {
-                console.error('Register failed:', err);
+                // "Email already exists." arrives as plain text; validation errors arrive as an object.
+                this.errorMessage = typeof err.error === 'string'
+                    ? err.error
+                    : 'Please check your details and try again.';
             }
         });
-
     }
-
 }

@@ -1,157 +1,179 @@
-﻿using backend.Controllers;
-using backend.Data;
+﻿using backend.Data;
+using backend.Models.DTOs;
 using backend.Models.Entities;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 
-namespace backend.Controllers
+namespace CVManager.Controllers
 {
     [ApiController]
-    [Route("api/[Controller]")]
+    [Route("api/[controller]")]
     [Authorize]
     public class CVController : ControllerBase
     {
         private readonly CVDbContext _context;
+
         public CVController(CVDbContext context)
         {
             _context = context;
         }
-       [HttpGet]
-       public async Task<IActionResult> GetCVs()
-        {
-            var cvs = await _context.CVs
-            .Include(c => c.PersonalInformation)
-            .Include(c => c.ExperienceInformation)
-            .ToListAsync();
-            return Ok(cvs);
-        }
-        [HttpGet("{id}")]
 
-        public async Task<IActionResult> GetCV([FromRoute] int id)
+        private int GetCurrentUserId()
         {
-            if (!ModelState.IsValid)
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userIdClaim))
             {
-                return BadRequest(ModelState);
+                throw new UnauthorizedAccessException();
             }
 
+            return int.Parse(userIdClaim);
+        }
+
+        // Entity -> Full Response DTO
+        private static CVResponseDTO ToResponse(CV cv)
+        {
+            return new CVResponseDTO
+            {
+                Id = cv.Id,
+                Title = cv.Title,
+                Description = cv.Description,
+                TemplateName = cv.TemplateName,
+                Content = cv.Content,
+                CreatedAt = cv.CreatedAt,
+                UpdatedAt = cv.UpdatedAt
+            };
+        }
+
+        // GET: api/CV
+        // Returns CVs without their Content
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<CVSummaryResponseDTO>>> GetCVs()
+        {
+            int userId = GetCurrentUserId();
+
+            var cvs = await _context.CVs
+                .Where(cv => cv.UserId == userId)
+                .Select(cv => new CVSummaryResponseDTO
+                {
+                    Id = cv.Id,
+                    Title = cv.Title,
+                    Description = cv.Description,
+                    TemplateName = cv.TemplateName,
+                    CreatedAt = cv.CreatedAt,
+                    UpdatedAt = cv.UpdatedAt
+                })
+                .ToListAsync();
+
+            return Ok(cvs);
+        }
+
+        // GET: api/CV/5
+        // Returns the complete CV, including Content
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CVResponseDTO>> GetCV(int id)
+        {
+            int userId = GetCurrentUserId();
+
             var cv = await _context.CVs
-                .Include(c => c.PersonalInformation)
-                .Include(c => c.ExperienceInformation)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(cv =>
+                    cv.Id == id &&
+                    cv.UserId == userId);
 
             if (cv == null)
             {
                 return NotFound();
             }
 
-            return Ok(cv);
+            return Ok(ToResponse(cv));
         }
-    
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCV([FromRoute] int id, [FromBody] CV cv)
+
+        // POST: api/CV
+        [HttpPost]
+        public async Task<ActionResult<CVResponseDTO>> CreateCV(
+            CVRequestDTO request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            int userId = GetCurrentUserId();
 
-            if (id != cv.Id)
+            var cv = new CV
             {
-                return BadRequest();
-            }
+                UserId = userId,
+                Title = request.Title,
+                Description = request.Description,
+                TemplateName = request.TemplateName,
+                Content = request.Content,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
 
-             var originalcv = await _context.CVs
-            .Include(c => c.PersonalInformation)
-            .Include(c => c.ExperienceInformation)
-            .SingleOrDefaultAsync(c => c.Id == id);
-            
-            if(originalcv == null)
+            _context.CVs.Add(cv);
+
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(
+                nameof(GetCV),
+                new { id = cv.Id },
+                ToResponse(cv));
+        }
+
+        // PUT: api/CV/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCV(
+            int id,
+            CVRequestDTO request)
+        {
+            int userId = GetCurrentUserId();
+
+            var cv = await _context.CVs
+                .FirstOrDefaultAsync(cv =>
+                    cv.Id == id &&
+                    cv.UserId == userId);
+
+            if (cv == null)
             {
                 return NotFound();
             }
 
-            
-            if (cv.PersonalInformation == null || cv.ExperienceInformation == null)
-                return BadRequest("PersonalInformation and ExperienceInformation are required.");
+            cv.Title = request.Title;
+            cv.Description = request.Description;
+            cv.TemplateName = request.TemplateName;
+            cv.Content = request.Content;
 
-            originalcv.Name = cv.Name;
+            // CreatedAt should never change
+            cv.UpdatedAt = DateTime.UtcNow;
 
-            originalcv.PersonalInformation.FullName = cv.PersonalInformation.FullName;
-            originalcv.PersonalInformation.CityName = cv.PersonalInformation.CityName;
-            originalcv.PersonalInformation.Email = cv.PersonalInformation.Email;
-            originalcv.PersonalInformation.MobileNumber = cv.PersonalInformation.MobileNumber;
-            
-
-            
-            originalcv.ExperienceInformation.CompanyName = cv.ExperienceInformation.CompanyName;
-            originalcv.ExperienceInformation.City = cv.ExperienceInformation.City;
-            originalcv.ExperienceInformation.CompanyField = cv.ExperienceInformation.CompanyField;
-            
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CVExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-     
-        [HttpPost]
-        public async Task<IActionResult> PostCV([FromBody] CV cv)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _context.CVs.Add(cv);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCV", new { id = cv.Id }, cv);
-        }
-
-
+        // DELETE: api/CV/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCV([FromRoute] int id)
+        public async Task<IActionResult> DeleteCV(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            int userId = GetCurrentUserId();
 
-            var cv = await _context.CVs.SingleOrDefaultAsync(m => m.Id == id);
+            var cv = await _context.CVs
+                .FirstOrDefaultAsync(cv =>
+                    cv.Id == id &&
+                    cv.UserId == userId);
+
             if (cv == null)
             {
                 return NotFound();
             }
 
             _context.CVs.Remove(cv);
+
             await _context.SaveChangesAsync();
 
-            return Ok(cv);
-        }
-
-        private bool CVExists(int id)
-        {
-            return _context.CVs.Any(e => e.Id == id);
+            return NoContent();
         }
     }
-
 }

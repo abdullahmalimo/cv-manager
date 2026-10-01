@@ -52,42 +52,42 @@ namespace backend
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                 };
-                options.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        Console.WriteLine("JWT MESSAGE RECEIVED");
-                        Console.WriteLine("Authorization header: " +
-                            context.Request.Headers["Authorization"]);
+            //    options.Events = new JwtBearerEvents
+            //    {
+            //        OnMessageReceived = context =>
+            //        {
+            //            Console.WriteLine("JWT MESSAGE RECEIVED");
+            //            Console.WriteLine("Authorization header: " +
+            //                context.Request.Headers["Authorization"]);
 
-                        return Task.CompletedTask;
-                    },
+            //            return Task.CompletedTask;
+            //        },
 
-                    OnAuthenticationFailed = context =>
-                    {
-                        Console.WriteLine("JWT AUTHENTICATION FAILED");
-                        Console.WriteLine(context.Exception.ToString());
+            //        OnAuthenticationFailed = context =>
+            //        {
+            //            Console.WriteLine("JWT AUTHENTICATION FAILED");
+            //            Console.WriteLine(context.Exception.ToString());
 
-                        return Task.CompletedTask;
-                    },
+            //            return Task.CompletedTask;
+            //        },
 
-                    OnTokenValidated = context =>
-                    {
-                        Console.WriteLine("JWT TOKEN VALIDATED");
-                        Console.WriteLine("User: " + context.Principal.Identity.Name);
+            //        OnTokenValidated = context =>
+            //        {
+            //            Console.WriteLine("JWT TOKEN VALIDATED");
+            //            Console.WriteLine("User: " + context.Principal.Identity.Name);
 
-                        return Task.CompletedTask;
-                    },
+            //            return Task.CompletedTask;
+            //        },
 
-                    OnChallenge = context =>
-                    {
-                        Console.WriteLine("JWT CHALLENGE");
-                        Console.WriteLine("Error: " + context.Error);
-                        Console.WriteLine("Description: " + context.ErrorDescription);
+            //        OnChallenge = context =>
+            //        {
+            //            Console.WriteLine("JWT CHALLENGE");
+            //            Console.WriteLine("Error: " + context.Error);
+            //            Console.WriteLine("Description: " + context.ErrorDescription);
 
-                        return Task.CompletedTask;
-                    }
-                };
+            //            return Task.CompletedTask;
+            //        }
+            //    };
             });
 
             services.AddSwaggerGen(c =>

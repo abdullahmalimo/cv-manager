@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models.Entities
@@ -8,18 +10,18 @@ namespace backend.Models.Entities
     {
         [Key]
         public int Id { get; set; }
-        [Required]
-        public string Name { get; set; }
-
-        [ForeignKey("PersonalInformation")]
-        public int PersonalInformationId { get; set; }
-        public PersonalInformation PersonalInformation { get; set; }
-        [ForeignKey("ExperienceInformation")]
-
-        public int ExperienceInformationId { get; set; }
-        public ExperienceInformation ExperienceInformation { get; set; }
-        [ForeignKey("User")]
         public int UserId { get; set; }
-        public User User { get; set; }
+        [Required]
+        [MaxLength(100)]
+        public string Title { get; set; }
+        [MaxLength(100)]
+        public string Description { get; set; }
+        [MaxLength(100)]
+        public string TemplateName { get; set; }
+        [Required]
+        public string Content { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+
     }
 }
