@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace backend.Controllers
 {
@@ -120,6 +121,15 @@ namespace backend.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            cv.UserId = int.Parse(userIdClaim);
 
             _context.CVs.Add(cv);
             await _context.SaveChangesAsync();
