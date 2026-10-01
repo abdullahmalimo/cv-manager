@@ -1,0 +1,16 @@
+<header>
+  <h1>{{ title() }}</h1>
+  <nav>
+    <a routerLink="/">All CVs</a>
+    <a routerLink="/create">Create New CV</a>
+    <a routerLink="/login">Login</a>
+    <a routerLink="/register">Register</a>
+    <button (click)="logout()">Logout</button>
+  </nav>
+</header>
+
+<main>
+ <div class="content-wrapper">
+    <router-outlet></router-outlet>
+  </div>
+</main>

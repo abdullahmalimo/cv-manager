@@ -1,0 +1,36 @@
+<h2>List Of All CVs</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>CV Name</th>
+      <th>Full Name</th>
+      <th>Email</th>
+      <th>Mobile Number</th>
+      <th>City Name</th>
+      <th>Company Name</th>
+      <th>Company City</th>
+      <th>Company Field</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let cv of cvs">
+    <td>{{ cv.id }}</td>
+    <td>{{ cv.name }}</td>
+    <td>{{ cv.personalInformation.fullName }}</td>
+    <td>{{ cv.personalInformation.email }}</td>
+    <td>{{ cv.personalInformation.mobileNumber }}</td>
+    <td>{{ cv.personalInformation.cityName }}</td>
+    <td>{{ cv.experienceInformation.companyName }}</td>
+    <td>{{ cv.experienceInformation.city }}</td>
+    <td>{{ cv.experienceInformation.companyField }}</td>
+    <td>
+      <button (click)="deleteCV(cv.id)">Delete</button>
+      <button [routerLink]="['/edit', cv.id]">Edit</button>
+    </td>
+  </tr>
+
+  </tbody>
+</table>

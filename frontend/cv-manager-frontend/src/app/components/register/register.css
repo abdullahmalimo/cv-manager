@@ -1,0 +1,32 @@
+h2 {
+  width: 400px;
+  margin: 50px auto;
+}
+
+form {
+  width: 400px;
+  margin: 40px auto;
+}
+
+form div {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+form label {
+  text-align: left;
+}
+
+form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+}
+
+button {
+  margin-left: 140px;
+  padding: 7px 15px;
+}
+

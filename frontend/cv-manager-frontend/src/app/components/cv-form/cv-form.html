@@ -1,0 +1,49 @@
+<form [formGroup]="cvForm" (ngSubmit)="onSubmit()">
+  <h2>Create CV</h2>
+
+
+  <div>
+        <label for="name">CV Name:</label>
+        <input id="name" type="text" formControlName="name" />
+  </div>
+
+  <h3>Personal Information</h3>
+  <div formGroupName="personalInformation">
+    <div>
+        <label for="fullName">Full Name:</label>
+        <input id="fullName" type="text" formControlName="fullName" />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input id="email" type="email" formControlName="email" />
+    </div>
+    <div>
+        <label for="cityName">City Name:</label>
+        <input id="cityName" type="text" formControlName="cityName" />
+    </div>
+    <div>
+        <label for="mobileNumber">Mobile:</label>
+        <input id="mobileNumber" type="text" formControlName="mobileNumber" />
+    </div>
+    <div>
+        <label for="zip">Mobile:</label>
+        <input id="zip" type="text" formControlName="zip" />
+    </div>
+  </div>
+
+  <h3>Experience Information</h3>
+  <div formGroupName="experienceInformation">
+    <div>
+        <label for="companyName">Company Name:</label>
+        <input id="companyName" type="text" formControlName="companyName" />
+    </div>
+        <label for="city">Company City:</label>
+        <input id="city" type="text" formControlName="city" />
+    <div>
+        <label for="companyField">Company Field:</label>
+        <input id="companyField" type="text" formControlName="companyField" />
+    </div>
+    </div>
+
+    <button type="submit" [disabled]="cvForm.invalid">Submit</button>
+</form>
