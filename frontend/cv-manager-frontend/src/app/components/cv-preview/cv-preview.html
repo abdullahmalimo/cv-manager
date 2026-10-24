@@ -1,0 +1,120 @@
+
+<div class="cv-paper" [ngClass]="templateName">
+
+  <header class="cv-header">
+    <h1>{{ content.personalDetails?.fullName || 'Your Name' }}</h1>
+
+    <div class="contact-info">
+      <span *ngIf="content.personalDetails?.email">
+        {{ content.personalDetails.email }}
+      </span>
+
+      <span *ngIf="content.personalDetails?.mobileNumber">
+        {{ content.personalDetails.mobileNumber }}
+      </span>
+
+      <span *ngIf="content.personalDetails?.cityName">
+        {{ content.personalDetails.cityName }}
+      </span>
+    </div>
+  </header>
+
+  <section *ngIf="content.summary">
+    <h2>Professional Summary</h2>
+    <p>{{ content.summary }}</p>
+  </section>
+
+  <section *ngIf="content.experiences?.length">
+    <h2>Experience</h2>
+
+    <article *ngFor="let experience of content.experiences">
+      <div class="entry-heading">
+        <strong>{{ experience.jobTitle }}</strong>
+        <span>{{ experience.companyName }}</span>
+      </div>
+
+      <p *ngIf="experience.city">{{ experience.city }}</p>
+
+      <p *ngIf="experience.startDate || experience.endDate" class="date-line">
+        {{ experience.startDate }}
+        <span *ngIf="experience.endDate">– {{ experience.endDate }}</span>
+      </p>
+
+      <p *ngIf="experience.description">{{ experience.description }}</p>
+    </article>
+  </section>
+
+  <section *ngIf="content.educations?.length">
+    <h2>Education</h2>
+
+    <article *ngFor="let education of content.educations">
+      <div class="entry-heading">
+        <strong>{{ education.degree }}</strong>
+        <span>{{ education.institution }}</span>
+      </div>
+
+      <p *ngIf="education.studyField">{{ education.studyField }}</p>
+
+      <p *ngIf="education.startDate || education.endDate" class="date-line">
+        {{ education.startDate }}
+        <span *ngIf="education.endDate">– {{ education.endDate }}</span>
+      </p>
+    </article>
+  </section>
+
+  <section *ngIf="content.skills?.length">
+    <h2>Skills</h2>
+
+    <ul class="skills-list">
+      <li *ngFor="let skill of content.skills">
+        {{ skill.name }}
+      </li>
+    </ul>
+  </section>
+
+  <section *ngIf="content.projects?.length">
+    <h2>Projects</h2>
+
+    <article *ngFor="let project of content.projects">
+      <div class="entry-heading">
+        <strong>{{ project.name }}</strong>
+      </div>
+
+      <p *ngIf="project.description">{{ project.description }}</p>
+
+      <p *ngIf="project.technologies">
+        <strong>Technologies:</strong> {{ project.technologies }}
+      </p>
+
+      <p *ngIf="project.url">
+        <a [href]="project.url" target="_blank" rel="noopener noreferrer">
+          {{ project.url }}
+        </a>
+      </p>
+    </article>
+  </section>
+
+  <section *ngIf="content.certificates?.length">
+    <h2>Certificates</h2>
+
+    <article *ngFor="let certificate of content.certificates">
+      <div class="entry-heading">
+        <strong>{{ certificate.name }}</strong>
+        <span>{{ certificate.issuer }}</span>
+      </div>
+
+      <p *ngIf="certificate.description">{{ certificate.description }}</p>
+
+      <p *ngIf="certificate.issueDate" class="date-line">
+        {{ certificate.issueDate }}
+      </p>
+
+      <p *ngIf="certificate.url">
+        <a [href]="certificate.url" target="_blank" rel="noopener noreferrer">
+          View credential
+        </a>
+      </p>
+    </article>
+  </section>
+
+</div>

@@ -1,12 +1,9 @@
-```html
-<h2>Experience ({{ experiences.length }})</h2>
+<h2>Experience</h2>
 
-@if (errorMessage) {
-  <p class="error-message">{{ errorMessage }}</p>
-}
+@if (errorMessage) { <p>{{ errorMessage }}</p> }
 
 @if (!showForm) {
-  <button type="button" (click)="startAdd()">+ Add experience</button>
+  <button (click)="startAdd()">+ Add experience</button>
 
   @if (experiences.length === 0) {
     <p>No experience added yet.</p>
@@ -15,22 +12,13 @@
   @for (e of experiences; track e.id) {
     <div>
       <strong>{{ e.jobTitle }}</strong> at {{ e.companyName }}
-
-      @if (e.city) {
-        · {{ e.city }}
-      }
-
+      @if (e.city) { · {{ e.city }} }
       <br />
-
       {{ e.startDate | date: 'MMM yyyy' }} –
       {{ e.endDate ? (e.endDate | date: 'MMM yyyy') : 'Present' }}
-
-      @if (e.description) {
-        <p>{{ e.description }}</p>
-      }
-
-      <button type="button" (click)="startEdit(e)">Edit</button>
-      <button type="button" (click)="delete(e.id)">Delete</button>
+      @if (e.description) { <p>{{ e.description }}</p> }
+      <button (click)="startEdit(e)">Edit</button>
+      <button (click)="delete(e.id)">Delete</button>
     </div>
   }
 } @else {
@@ -41,27 +29,22 @@
       <label for="jobTitle">Job Title:</label>
       <input id="jobTitle" type="text" formControlName="jobTitle" />
     </div>
-
     <div>
       <label for="companyName">Company:</label>
       <input id="companyName" type="text" formControlName="companyName" />
     </div>
-
     <div>
       <label for="city">City:</label>
       <input id="city" type="text" formControlName="city" />
     </div>
-
     <div>
       <label for="startDate">Start Date:</label>
       <input id="startDate" type="date" formControlName="startDate" />
     </div>
-
     <div>
       <label for="endDate">End Date (leave empty if current):</label>
       <input id="endDate" type="date" formControlName="endDate" />
     </div>
-
     <div>
       <label for="description">Description:</label>
       <textarea id="description" rows="4" formControlName="description"></textarea>
@@ -71,4 +54,3 @@
     <button type="button" (click)="cancel()">Cancel</button>
   </form>
 }
-```

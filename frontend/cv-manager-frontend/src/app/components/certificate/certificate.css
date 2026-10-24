@@ -126,31 +126,11 @@ padding: 0;
 list-style: none;
 }
 
-/* Each entry: information on the left, actions on the right */
 li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-
-    padding: 16px;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    background: #ffffff;
-}
-
-/* Keep the entry information on the left */
-li > div:first-child {
-    flex: 1;
-    min-width: 0;
-}
-
-/* Keep Edit/Delete buttons together on the far right */
-li > div:last-child {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-left: auto;
+padding: 16px;
+border: 1px solid #e5e7eb;
+border-radius: 10px;
+background: #ffffff;
 }
 
 li p {

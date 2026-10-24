@@ -21,11 +21,14 @@ import { ProjectService } from '../../services/project';
 import { CertificateService } from '../../services/certificate';
 
 import { CVRequest, CvContent } from '../../models/cv.model';
+import { CvPreview } from '../cv-preview/cv-preview';
+import html2pdf from 'html2pdf.js';
+
 
 @Component({
   selector: 'app-cv-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink,CvPreview],
   templateUrl: './cv-form.html',
   styleUrl: './cv-form.css'
 })
@@ -358,4 +361,53 @@ export class CvForm implements OnInit {
       }
     });
   }
+  exportPdf(): void {
+  const preview = document.querySelector(
+    '.cv-preview-panel .cv-paper'
+  ) as HTMLElement | null;
+
+  if (!preview) {
+    this.errorMessage = 'Could not find the CV preview to export.';
+    return;
+  }
+
+  const title = this.cvForm.get('title')?.value || 'My CV';
+
+  const filename =
+    title.replace(/[<>:"/\\|?*\x00-\x1F]/g, '-').trim() || 'My CV';
+
+  const options = {
+    margin: [10, 10, 10, 10] as [number, number, number, number],
+    filename: `${filename}.pdf`,
+    image: {
+      type: 'jpeg' as const,
+      quality: 0.98
+    },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false
+    },
+    jsPDF: {
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait' as const
+    },
+    pagebreak: {
+      mode: ['css', 'legacy']
+    }
+  };
+
+  this.errorMessage = '';
+
+  html2pdf()
+    .set(options)
+    .from(preview)
+    .save()
+    .catch((error: unknown) => {
+      console.error('Error exporting PDF:', error);
+      this.errorMessage = 'Could not export the CV. Please try again.';
+    });
+}
 }
